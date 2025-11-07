@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.services import create_task, get_tasks, delete_task, create_user
-from app.models import Task, SessionLocal, User
+from app.models import SessionLocal, User
 
 def get_test_user(db: Session):
   user = db.query(User).filter(User.username == "service_test_user").first()

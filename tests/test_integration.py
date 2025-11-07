@@ -1,8 +1,8 @@
-from app.models import engine, SessionLocal
+from app.models import engine
 
 def test_database_connection():
   try:
     connection = engine.connect()
-    assert connection.closed == False
+    assert not connection.closed
   finally:
     connection.close()

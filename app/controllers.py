@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
-from .models import create_tables, User, Task, get_db
+from .models import create_tables, User, get_db
 from .services import (
   create_task, get_tasks, delete_task, 
   get_user_by_username, create_user
