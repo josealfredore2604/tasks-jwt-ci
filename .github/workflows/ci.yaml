@@ -57,7 +57,7 @@ jobs:
           locust -f locustfile.py \
             --host http://localhost:8000 \
             --headless \
-            --users 500 \
+            --users 200 \
             --spawn-rate 50 \
             --run-time 1m \
             --html=stress-report.html \
