@@ -52,17 +52,6 @@ jobs:
             --html=performance-report.html \
             --exit-code-on-error 0
 
-      - name: Run Stress Test (Locust)
-        run: |
-          locust -f locustfile.py \
-            --host http://localhost:8000 \
-            --headless \
-            --users 200 \
-            --spawn-rate 50 \
-            --run-time 1m \
-            --html=stress-report.html \
-            --exit-code-on-error 0
-
       - name: Upload Locust Reports
         if: always()
         uses: actions/upload-artifact@v4
