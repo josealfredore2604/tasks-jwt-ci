@@ -33,30 +33,23 @@ jobs:
         id: tests
         run: docker compose exec app pytest
 
-      - name: Install Locust
-        run: |
-          pip install --upgrade pip setuptools
-          pip install locust
-
       - name: Run Performance Test (Locust)
-        run: |
-          locust -f locustfile.py \
-            --host http://localhost:8000 \
-            --headless \
-            --users 50 \
-            --spawn-rate 10 \
-            --run-time 30s \
-            --exit-code-on-error 1
+        uses: apardo04/locust-github-action@master
+        with:
+          LOCUSTFILE: "locustfile.py"
+          URL: "http://localhost:8000"
+          USERS: "50"
+          RATE: "10"
+          RUNTIME: "30s"
 
       - name: Run Stress Test (Locust)
-        run: |
-          locust -f locustfile.py \
-            --host http://localhost:8000 \
-            --headless \
-            --users 500 \
-            --spawn-rate 50 \
-            --run-time 1m \
-            --exit-code-on-error 0
+        uses: apardo04/locust-github-action@master
+        with:
+          LOCUSTFILE: "locustfile.py"
+          URL: "http://localhost:8000"
+          USERS: "500"
+          RATE: "50"
+          RUNTIME: "1m"
 
       - name: Run DAST (OWASP ZAP)
         run: |
