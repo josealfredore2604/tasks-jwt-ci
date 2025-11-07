@@ -60,27 +60,6 @@ jobs:
           path: |
             performance-report.html
             stress-report.html
-
-      - name: Run DAST (OWASP ZAP)
-        run: |
-          docker run --network="host" \
-            -v $(pwd):/zap/wrk:rw \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
-            -t http://localhost:8000/openapi.json \
-            -J report.json \
-            -r report.html \
-            -I
-        continue-on-error: true
-
-      - name: Upload ZAP Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-security-report
-          path: |
-            report.json
-            report.html
             
       - name: Stop containers
         if: always()
