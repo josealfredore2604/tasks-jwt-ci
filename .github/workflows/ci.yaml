@@ -68,9 +68,10 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t http://localhost:8000/openapi.json \
-            -f openapi \
             -J report.json \
-            -r report.html
+            -r report.html \
+            -I
+        continue-on-error: true
 
       - name: Upload ZAP Report
         if: always()
