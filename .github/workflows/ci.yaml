@@ -34,7 +34,7 @@ jobs:
         run: docker compose exec app pytest
 
       - name: Install Locust
-        run: pip install locust
+        run: pip install locust zope.interface
 
       - name: Run Performance Test (Locust)
         run: |
