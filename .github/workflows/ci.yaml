@@ -14,24 +14,68 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Linters
+        run: pip install ruff bandit
+
+      - name: Run Linting (Ruff)
+        run: ruff check .
+
+      - name: Run SAST (Bandit)
+        run: bandit -r app
+
       - name: Build and run containers
         run: docker compose up --build -d
 
       - name: Wait for services
         run: sleep 15
 
-      - name: Run tests
+      - name: Run tests (pytest)
         id: tests
         run: docker compose exec app pytest
 
-      - name: Print OK
-        if: success()
-        run: echo "OK"
+      - name: Install Locust
+        run: pip install locust
 
-      - name: Print FAILED
-        if: failure()
-        run: echo "FAILED"
-        
+      - name: Run Performance Test (Locust)
+        run: |
+          locust -f locustfile.py \
+            --host http://localhost:8000 \
+            --headless \
+            --users 50 \
+            --spawn-rate 10 \
+            --run-time 30s \
+            --exit-code-on-error 1
+
+      - name: Run Stress Test (Locust)
+        run: |
+          locust -f locustfile.py \
+            --host http://localhost:8000 \
+            --headless \
+            --users 500 \
+            --spawn-rate 50 \
+            --run-time 1m \
+            --exit-code-on-error 0
+
+      - name: Run DAST (OWASP ZAP)
+        run: |
+          docker run --network="host" \
+            -v $(pwd):/zap/wrk:rw \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t http://localhost:8000/openapi.json \
+            -f openapi \
+            -J report.json \
+            -r report.html
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-security-report
+          path: |
+            report.json
+            report.html
+            
       - name: Stop containers
         if: always()
         run: docker compose down

@@ -9,3 +9,6 @@ python-jose[cryptography]
 python-multipart
 pytest
 requests
+locust
+bandit
+ruff

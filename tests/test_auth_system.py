@@ -77,3 +77,28 @@ def test_8_delete_task_with_auth():
   response = requests.delete(f"{BASE_URL}/tasks/{task_id}", headers=headers)
   assert response.status_code == 200
   assert response.json() == {"message": "Task deleted"}
+  
+  
+def test_9_login_with_sql_injection_attempt():
+  """
+  Intenta iniciar sesión usando una carga útil clásica de inyección SQL.
+  La prueba DEBE PASAR si el login falla (401), lo que significa que
+  la aplicación NO es vulnerable.
+  """
+  # Esta carga útil intentaría saltarse la contraseña
+  # si el código fuera vulnerable (WHERE username = '' OR '1'='1')
+  username_payload = "' OR '1'='1'"
+  password_payload = "cualquiercosa"
+
+  login_data = {"username": username_payload, "password": password_payload}
+  
+  response = requests.post(f"{BASE_URL}/token", data=login_data)
+
+  # El comportamiento SEGURO es 401 Unauthorized.
+  # La base de datos buscó al usuario "' OR '1'='1'" y no lo encontró.
+  assert response.status_code == 401
+  
+  # Si la inyección hubiera funcionado, la API habría devuelto un 200
+  # y esta línea haría que la prueba fallara, alertándonos.
+  assert response.status_code != 200
+  assert "Incorrect username or password" in response.json()["detail"]
